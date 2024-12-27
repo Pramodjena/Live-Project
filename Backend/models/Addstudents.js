@@ -1,6 +1,6 @@
 const mongoose = require("mongoose"); // CJS
 
-const AddstudentsSchema = mongoose.connect({
+const AddstudentsSchema = mongoose.Schema({
   name: String,
   email: String,
   password: String,

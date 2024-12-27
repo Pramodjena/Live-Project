@@ -1,5 +1,4 @@
 const express = require("express");
-
 const router = express.Router();
 const Addcourse = require("../models/Addcourse");
 const redis = require("redis");
@@ -45,22 +44,54 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-  } catch (error) {}
+    const addcourse = new Addcourse(req.body);
+    const newaddcourse = await addcourse.save();
+    res.status(201).json({ data: newaddcourse });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
 router.post("/login", async (req, res) => {
   try {
-  } catch (error) {}
+    const newUser = await Addcourse.findOne({ email: req.body.email });
+    if (newUser) {
+      if (newUser.password === req.body.password) {
+        res.status(200).json({ msg: "Ok", data: newUser });
+      } else {
+        res.status(200).json({ msg: "Incorrect password" });
+      }
+    } else {
+      res.status(400).json({ msg: "Invalid user" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
 router.put("/:id", async (req, res) => {
   try {
-  } catch (error) {}
+    const addcourse = await Addcourse.findById(req.params.id);
+    if (!addcourse) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    addcourse.email = req.body.email || addcourse.email;
+    addcourse.password = req.body.password || addcourse.password;
+
+    const updateAddcourse = await addcourse.save();
+    res.status(200).json({ data: updateAddcourse });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
 router.delete("/:id", async (req, res) => {
   try {
-  } catch (error) {}
+    await Addcourse.findByIdAndRemove(req.params.id);
+    res.status(200).json({ msg: "Addcourse deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
 module.exports = router;
